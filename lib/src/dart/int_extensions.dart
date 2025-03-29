@@ -56,4 +56,23 @@ extension IntBoostExtensions on int {
 
   /// Represents the integer value as Gigabytes (value * 1024 * 1024 * 1024).
   int get gb => this * 1024 * 1024 * 1024;
+
+  String get formatedSize {
+    if (this <= 0) return "0 B";
+    if (this < 1024) return "$this B";
+    if (this < 1024 * 1024) return "${(this / 1024).toStringAsFixed(1)} KB"; // KB
+    if (this < 1024 * 1024 * 1024) return "${(this / (1024 * 1024)).toStringAsFixed(1)} MB";
+    if (this < 1024 * 1024 * 1024 * 1024) return "${(this / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB";
+    if (this < 1024 * 1024 * 1024 * 1024 * 1024) return "${(this / (1024 * 1024 * 1024 * 1024)).toStringAsFixed(1)} TB";
+    if (this < 1024 * 1024 * 1024 * 1024 * 1024 * 1024) {
+      return "${(this / (1024 * 1024 * 1024 * 1024 * 1024)).toStringAsFixed(1)} PB";
+    }
+    if (this < 1024 * 1024 * 1024 * 1024 * 1024 * 1024 * 1024) {
+      return "${(this / (1024 * 1024 * 1024 * 1024 * 1024 * 1024)).toStringAsFixed(1)} EB";
+    }
+    if (this < 1024 * 1024 * 1024 * 1024 * 1024 * 1024 * 1024 * 1024) {
+      return "${(this / (1024 * 1024 * 1024 * 1024 * 1024 * 1024 * 1024)).toStringAsFixed(1)} ZB";
+    }
+    return "${(this / (1024 * 1024 * 1024 * 1024 * 1024 * 1024 * 1024 * 1024)).toStringAsFixed(1)} YB";
+  }
 }

@@ -3,6 +3,8 @@ import 'dart:math';
 
 import 'iterable_extensions.dart';
 import 'string_extensions.dart';
+import 'int_extensions.dart';
+import '../utils/_reading_time.dart';
 
 /// Extensions specific to non-nullable [List<T>].
 extension ListBoostExtensions<T> on List<T> {
@@ -129,8 +131,8 @@ extension ListStringBoostExtensions on List<String>? {
   /// final paragraphs = ["Hello world.", "Another sentence here."];
   /// final readTime = paragraphs.readingTime(); // ~2 seconds if WPM is 225
   /// ```
-  Duration readingTime({int wordsPerMinute = 225}) {
-    if (isNullOrEmpty) return Duration.zero;
+  String readingTime({int wordsPerMinute = 225}) {
+    if (isNullOrEmpty) return "0 min";
     assert(wordsPerMinute > 0, 'wordsPerMinute must be positive.');
 
     int totalWordCount = 0;
@@ -142,13 +144,11 @@ extension ListStringBoostExtensions on List<String>? {
       }
     }
 
-    if (totalWordCount == 0) return Duration.zero;
+    if (totalWordCount == 0) return "0 min";
 
     final minutes = totalWordCount / wordsPerMinute;
-    final totalSeconds = minutes * 60;
-    final milliseconds = (totalSeconds * 1000).round();
 
-    return Duration(milliseconds: milliseconds);
+    return readingTimeFromMinutes(minutes);
   }
 
   /// Calculates the total byte size of all strings in the list when encoded
@@ -173,4 +173,13 @@ extension ListStringBoostExtensions on List<String>? {
     }
     return totalSize;
   }
+
+  int totalLength() {
+    if (isNullOrEmpty) return 0;
+    return this!.fold(0, (prev, line) => prev + line.length);
+  }
+
+  String get formatedSize => totalByteSize().formatedSize;
+
+  String get formatedSizeV2 => totalLength().formatedSize;
 }

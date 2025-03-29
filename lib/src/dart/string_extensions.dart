@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import '../utils/_string_validation_patterns.dart';
+import '../utils/_reading_time.dart';
 
 /// Extensions for [String] and nullable [String?].
 extension StringBoostExtensions on String? {
@@ -136,22 +137,19 @@ extension StringBoostExtensions on String? {
   /// Assumes an average reading speed provided by [wordsPerMinute] (default is 225).
   /// Calculates based on word count, where words are separated by whitespace.
   /// Returns [Duration.zero] if the string is null or blank.
-  Duration readingTime({int wordsPerMinute = 225}) {
-    if (isNullOrBlank) return Duration.zero;
+  String readingTime({int wordsPerMinute = 225}) {
+    if (isNullOrBlank) return '0 min';
     assert(wordsPerMinute > 0, 'wordsPerMinute must be positive.');
 
     // Split by whitespace and filter out empty strings resulting from multiple spaces
     final wordList = this!.split(RegExp(r'\s+')).where((s) => s.isNotEmpty);
     final wordCount = wordList.length;
 
-    if (wordCount == 0) return Duration.zero;
+    if (wordCount == 0) return '0 min';
 
     final minutes = wordCount / wordsPerMinute;
-    final totalSeconds = (minutes * 60);
-    // Use milliseconds for better precision within Duration
-    final milliseconds = (totalSeconds * 1000).round();
 
-    return Duration(milliseconds: milliseconds);
+    return readingTimeFromMinutes(minutes);
   }
 
   /// Calculates the byte size of the string when encoded using the specified [encoding].
