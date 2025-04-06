@@ -7,23 +7,23 @@ abstract class Response<S, F> {
     }
   }
 
-  bool get isSuccess => this is Data<S, F>;
+  bool get isSuccess => this is Success<S, F>;
 
-  bool get isFailure => this is ErrorData<S, F>;
+  bool get isFailure => this is Failure<S, F>;
 
-  Data<S, F> get _asSuccess => this as Data<S, F>;
+  Success<S, F> get _asSuccess => this as Success<S, F>;
 
-  ErrorData<S, F> get _asFailure => this as ErrorData<S, F>;
+  Failure<S, F> get _asFailure => this as Failure<S, F>;
 
   dynamic get response => this.isSuccess ? this._asSuccess.content : this._asFailure.content;
 }
 
-class Data<S, F> extends Response<S, F> {
+class Success<S, F> extends Response<S, F> {
   S content;
-  Data(this.content);
+  Success(this.content);
 }
 
-class ErrorData<S, F> extends Response<S, F> {
+class Failure<S, F> extends Response<S, F> {
   F content;
-  ErrorData(this.content);
+  Failure(this.content);
 }
