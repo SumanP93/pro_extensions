@@ -12,6 +12,7 @@ export 'src/dart/bool_extensions.dart';
 export 'src/dart/num_extensions.dart';
 export 'src/dart/int_extensions.dart';
 export 'src/dart/double_extensions.dart';
+export 'src/dart/regexp_extensions.dart';
 
 // Collections
 export 'src/dart/iterable_extensions.dart';
