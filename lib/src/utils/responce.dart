@@ -1,7 +1,13 @@
-abstract class Response<S, F> {
-  const Response(this.data);
+typedef SuccessCallBack<S> = void Function(S s);
+typedef FailedCallBack<F> = void Function(F f);
 
-  void handle(void Function(S s) onSuccess, void Function(F f) onFailed) {
+sealed class Response<S, F> {
+  const Response();
+
+  factory Response.success(S data) => Success<S, F>(data);
+  factory Response.failed(F data) => Failed<S, F>(data);
+
+  void handle({required SuccessCallBack<S> onSuccess, required FailedCallBack<F> onFailed}) {
     if (this.isSuccess) {
       onSuccess(this.asSuccess.data);
     } else {
@@ -9,7 +15,7 @@ abstract class Response<S, F> {
     }
   }
 
-  final dynamic data;
+  dynamic get responseData => this is Success<S, F> ? this.asSuccess.data : this.asFailed.data;
 
   bool get isSuccess => this is Success<S, F>;
 
@@ -20,10 +26,12 @@ abstract class Response<S, F> {
   Failed<S, F> get asFailed => this as Failed<S, F>;
 }
 
-class Success<S, F> extends Response<S, F> {
-  const Success(S super.data);
+final class Success<S, F> extends Response<S, F> {
+  final S data;
+  const Success(this.data);
 }
 
-class Failed<S, F> extends Response<S, F> {
-  const Failed(F super.data);
+final class Failed<S, F> extends Response<S, F> {
+  final F data;
+  const Failed(this.data);
 }
