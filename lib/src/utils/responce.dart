@@ -15,7 +15,9 @@ sealed class Response<S, F> {
     }
   }
 
-  dynamic get responseData => this is Success<S, F> ? this.asSuccess.data : this.asFailed.data;
+  S? get successData => this is Success<S, F> ? this.asSuccess.data : null;
+
+  F? get failedData => this is Failed<S, F> ? this.asFailed.data : null;
 
   bool get isSuccess => this is Success<S, F>;
 
