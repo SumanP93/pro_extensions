@@ -15,9 +15,9 @@ sealed class Response<S, F> {
     }
   }
 
-  S? get successData => this is Success<S, F> ? this.asSuccess.data : null;
+  S? get successData => isSuccess ? this.asSuccess.data : null;
 
-  F? get failedData => this is Failed<S, F> ? this.asFailed.data : null;
+  F? get failedData => isFailed ? this.asFailed.data : null;
 
   bool get isSuccess => this is Success<S, F>;
 
