@@ -1,29 +1,29 @@
 abstract class Response<S, F> {
-  void handle(void Function(S s) onSuccess, void Function(F f) onFailure) {
+  const Response(this.data);
+
+  void handle(void Function(S s) onSuccess, void Function(F f) onFailed) {
     if (this.isSuccess) {
-      onSuccess(this._asSuccess.content);
+      onSuccess(this.asSuccess.data);
     } else {
-      onFailure(this._asFailure.content);
+      onFailed(this.asFailed.data);
     }
   }
 
+  final dynamic data;
+
   bool get isSuccess => this is Success<S, F>;
 
-  bool get isFailure => this is Failure<S, F>;
+  bool get isFailed => this is Failed<S, F>;
 
-  Success<S, F> get _asSuccess => this as Success<S, F>;
+  Success<S, F> get asSuccess => this as Success<S, F>;
 
-  Failure<S, F> get _asFailure => this as Failure<S, F>;
-
-  dynamic get response => this.isSuccess ? this._asSuccess.content : this._asFailure.content;
+  Failed<S, F> get asFailed => this as Failed<S, F>;
 }
 
 class Success<S, F> extends Response<S, F> {
-  S content;
-  Success(this.content);
+  const Success(S super.data);
 }
 
-class Failure<S, F> extends Response<S, F> {
-  F content;
-  Failure(this.content);
+class Failed<S, F> extends Response<S, F> {
+  const Failed(F super.data);
 }
