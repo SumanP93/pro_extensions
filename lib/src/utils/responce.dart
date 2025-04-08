@@ -1,5 +1,5 @@
-typedef SuccessCallBack<S> = void Function(S s);
-typedef FailedCallBack<F> = void Function(F f);
+typedef SuccessCallBack<R, S> = R Function(S s);
+typedef FailedCallBack<R, F> = R Function(F f);
 
 sealed class Response<S, F> {
   const Response();
@@ -7,13 +7,9 @@ sealed class Response<S, F> {
   factory Response.success(S data) => Success<S, F>(data);
   factory Response.failed(F data) => Failed<S, F>(data);
 
-  void handle({required SuccessCallBack<S> onSuccess, required FailedCallBack<F> onFailed}) {
-    if (this.isSuccess) {
-      onSuccess(this.asSuccess.data);
-    } else {
-      onFailed(this.asFailed.data);
-    }
-  }
+  void handle({required SuccessCallBack<void, S> onSuccess, required FailedCallBack<void, F> onFailed});
+
+  R fold<R>({required SuccessCallBack<R, S> onSuccess, required FailedCallBack<R, F> onFailed});
 
   S? get successData => isSuccess ? this.asSuccess.data : null;
 
@@ -31,9 +27,25 @@ sealed class Response<S, F> {
 final class Success<S, F> extends Response<S, F> {
   final S data;
   const Success(this.data);
+
+  @override
+  void handle({required SuccessCallBack<void, S> onSuccess, required FailedCallBack<void, F> onFailed}) =>
+      onSuccess(asSuccess.data);
+
+  @override
+  R fold<R>({required SuccessCallBack<R, S> onSuccess, required FailedCallBack<R, F> onFailed}) =>
+      onSuccess(asSuccess.data);
 }
 
 final class Failed<S, F> extends Response<S, F> {
   final F data;
   const Failed(this.data);
+
+  @override
+  void handle({required SuccessCallBack<void, S> onSuccess, required FailedCallBack<void, F> onFailed}) =>
+      onFailed(asFailed.data);
+
+  @override
+  R fold<R>({required SuccessCallBack<R, S> onSuccess, required FailedCallBack<R, F> onFailed}) =>
+      onFailed(asFailed.data);
 }
