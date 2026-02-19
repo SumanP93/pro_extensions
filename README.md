@@ -58,7 +58,9 @@ Add the package to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  pro_extensions: ^<latest_version>
+  pro_extensions: 
+    git:
+      url: https://github.com/SumanP93/pro_extensions.git
 ```
 
 Then run:
