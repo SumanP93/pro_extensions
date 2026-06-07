@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import '../utils/_string_validation_patterns.dart';
 import '../utils/_reading_time.dart';
+import '../utils/_string_validation_patterns.dart';
 
 /// Extensions for [String] and nullable [String?].
 extension StringBoostExtensions on String? {
@@ -159,5 +159,89 @@ extension StringBoostExtensions on String? {
   int byteSize({Encoding encoding = utf8}) {
     if (isNullOrEmpty) return 0;
     return encoding.encode(this!).length;
+  }
+
+  /// Removes Markdown formatting from the string.
+  ///
+  /// This method strips common Markdown elements including:
+  /// - Headers (#, ##, ###, etc.)
+  /// - Links ([text](url))
+  /// - Images (![alt](url))
+  /// - Bold (**text** or __text__)
+  /// - Italics (*text* or _text_)
+  /// - Code blocks (```...```)
+  /// - Inline code (`...`)
+  /// - Blockquotes (>...)
+  /// - Horizontal rules (---)
+  /// - Lists (* item, - item)
+  /// - Tables (headers and pipes)
+  ///
+  /// Returns an empty string if the input is null or empty.
+  ///
+  /// Example:
+  /// ```dart
+  /// final markdown = "# Title\n\n**Hello** world!";
+  /// final plainText = markdown.removeMarkdown();
+  /// print(plainText); // "Hello world!"
+  /// ```
+  String removeMarkdown() {
+    if (this == null || this!.isEmpty) return '';
+
+    var result = this!;
+
+    // Images: ![alt](url) -> alt
+    result = result.replaceAllMapped(RegExp(r'!\[([^\]]*)\]\([^)]+\)'), (m) => m.group(1) ?? '');
+
+    // Links: [text](url) -> text
+    result = result.replaceAllMapped(RegExp(r'\[([^\]]+)\]\([^)]+\)'), (m) => m.group(1) ?? '');
+
+    // Code blocks
+    result = result.replaceAll(RegExp(r'```[\s\S]*?```'), '');
+
+    // Inline code
+    result = result.replaceAllMapped(RegExp(r'`([^`]+)`'), (m) => m.group(1) ?? '');
+
+    // Headers
+    result = result.replaceAll(RegExp(r'^\s*#{1,6}\s*', multiLine: true), '');
+
+    // Blockquotes
+    result = result.replaceAll(RegExp(r'^\s*>\s*', multiLine: true), '');
+
+    // Horizontal rules
+    result = result.replaceAll(RegExp(r'^\s*[-*_]{3,}\s*$', multiLine: true), '');
+
+    // Bullet lists
+    result = result.replaceAll(RegExp(r'^\s*[-*•]\s+', multiLine: true), '');
+
+    // Numbered lists
+    result = result.replaceAll(RegExp(r'^\s*\d+\.\s+', multiLine: true), '');
+
+    // Bold
+    result = result.replaceAllMapped(RegExp(r'\*\*(.*?)\*\*'), (m) => m.group(1) ?? '');
+
+    result = result.replaceAllMapped(RegExp(r'__(.*?)__'), (m) => m.group(1) ?? '');
+
+    // Italic
+    result = result.replaceAllMapped(RegExp(r'\*(.*?)\*'), (m) => m.group(1) ?? '');
+
+    result = result.replaceAllMapped(RegExp(r'_(.*?)_'), (m) => m.group(1) ?? '');
+
+    // Tables
+    result = result.replaceAll('|', ' ');
+
+    // HTML tags
+    result = result.replaceAll(RegExp(r'<[^>]+>'), '');
+
+    // Common HTML entities
+    const htmlEntities = {'&nbsp;': ' ', '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"', '&#39;': "'"};
+
+    htmlEntities.forEach((key, value) {
+      result = result.replaceAll(key, value);
+    });
+
+    // Normalize whitespace
+    result = result.replaceAll(RegExp(r'\s+'), ' ');
+
+    return result.trim();
   }
 }
